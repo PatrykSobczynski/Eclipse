@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eclipse</title>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="content clearfix">
+            <div id="photos" class="clearfix">
+                <!-- Photo from API -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        const accesKey = '7vliAXqrRbP61UK6eq4Z6bZxj3OsoCCCzX5k0-Ss6RM';
+        const rand_photo_url = `https://api.unsplash.com/photos/?client_id=${accesKey}`;
+
+        fetch(rand_photo_url)
+
+            .then(function (response) {
+                return response.json()
+            })
+            .then(function (data) {
+                appendData(data);
+            })
+            .catch(function (err) {
+                console.log('error: ' + err);
+            });
+
+
+        function appendData(data) {
+            
+            var i;
+            for (i = 0; i < 4; i++) {
+                const container = document.getElementById("photos");
+                const div = document.createElement('div');
+
+                const json_date = data[i].created_at;
+                const date = new Date(json_date);
+                // becouse: month started from 0
+                const month = date.getMonth() + 1;
+                const created_at_str = [("0" + date.getDate()).slice(-2), ("0" + month).slice(-2), date.getFullYear()].join('/')
+
+                if (data[i].description == null) {
+                    data[i].description = "No description";
+                }
+
+                div.innerHTML = '<div class="info"><p class="desc">' + data[i].description + '</p>' + ' <p><sup><b>by</b></sup> ' +
+                    '<a href="' + data[i].user.links.html + '"target="_blank">' +
+                    data[i].user.name + '</a>' + ' <sup><b>on</b></sup> ' + created_at_str + '</p></div>'
+                div.setAttribute("style", "background-image: url(" + data[i].urls.regular + ");");
+                container.appendChild(div);
+
+            }
+        }
+    </script>
+</body>
+
+</html>
