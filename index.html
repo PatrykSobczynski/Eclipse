@@ -11,16 +11,16 @@
 </head>
 
 <body>
-
     <div class="wrapper">
         <div class="content clearfix">
             <div id="photos" class="clearfix">
                 <!-- Photo from API -->
             </div>
+            <button id="viewMoreBtn">
+                <p>View more</p>
+            </button>
         </div>
-
     </div>
-
     <script>
 
         const accesKey = '7vliAXqrRbP61UK6eq4Z6bZxj3OsoCCCzX5k0-Ss6RM';
@@ -38,31 +38,43 @@
                 console.log('error: ' + err);
             });
 
-
         function appendData(data) {
-            
-            var i;
-            for (i = 0; i < 4; i++) {
+            let photos = data.slice(0, 4);
+            console.log(photos);
+            photos.map(getData);
+            function getData(photo) {
                 const container = document.getElementById("photos");
                 const div = document.createElement('div');
 
-                const json_date = data[i].created_at;
+                const json_date = photo.created_at;
                 const date = new Date(json_date);
-                // becouse: month started from 0
+                // because: month started from 0
                 const month = date.getMonth() + 1;
+
                 const created_at_str = [("0" + date.getDate()).slice(-2), ("0" + month).slice(-2), date.getFullYear()].join('/')
 
-                if (data[i].description == null) {
-                    data[i].description = "No description";
+                if (photo.description == null) {
+                    photo.description = "No description";
                 }
 
-                div.innerHTML = '<div class="info"><p class="desc">' + data[i].description + '</p>' + ' <p><sup><b>by</b></sup> ' +
-                    '<a href="' + data[i].user.links.html + '"target="_blank">' +
-                    data[i].user.name + '</a>' + ' <sup><b>on</b></sup> ' + created_at_str + '</p></div>'
-                div.setAttribute("style", "background-image: url(" + data[i].urls.regular + ");");
+                div.innerHTML = '<div class="info"><p class="desc">' +
+                    photo.description + '</p>' + ' <p><sup><b>by</b></sup> ' + '<a href="' +
+                    photo.user.links.html + '"target="_blank">' +
+                    photo.user.name + '</a>' + ' <sup><b>on</b></sup> ' +
+                    created_at_str + '</p></div>'
+                div.setAttribute("style", "background-image: url(" + photo.urls.regular + ");");
                 container.appendChild(div);
 
+                const countOfDivs = document.querySelectorAll("#photos>div");
+                listCountOfDivs = [...countOfDivs];
+                if (listCountOfDivs.length >= 8) {
+                    document.getElementById("viewMoreBtn").style.display = "none";
+                    console.log("hide");
+                }
             }
+            document.getElementById("viewMoreBtn").addEventListener("click", () => {
+                appendData(data.slice(4, 8));
+            })
         }
     </script>
 </body>
